@@ -1,7 +1,43 @@
+'use client';
 import Image from 'next/image';
 import {Button} from './components/button';
+import {useState} from 'react';
 
 export default function Home() {
+	const [selected, setSelected] = useState('');
+	const [submitted, setSubmitted] = useState(false);
+
+	const [email, setEmail] = useState('');
+
+	const handleClick = (e: React.FormEvent<HTMLButtonElement>) => {
+		console.log(e.currentTarget.value);
+		console.log('clicked');
+		setSelected(e.currentTarget.value);
+	};
+	const url =
+		'https://project-server-6p2zykct3q-ew.a.run.app/bootsexchange-emails';
+
+	const submit = async (event: React.FormEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+
+		const response = await fetch(url, {
+			method: 'POST', // *GET, POST, PUT, DELETE, etc.
+			headers: {
+				'Content-Type': 'application/json',
+				'x-api-key': String(process.env.NEXT_PUBLIC_API_KEY),
+				// 'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			body: JSON.stringify({email: email}), // body data type must match "Content-Type" header
+		});
+
+		if (response.ok) {
+			localStorage.setItem('submittedMessage', 'ok');
+			setSubmitted(true);
+		}
+
+		return response.json(); // parses JSON response into native JavaScript objects
+	};
+
 	return (
 		<main className="flex flex-col justify-center items-center p-10 pt-24 gap-16 ">
 			{/* Header */}
@@ -14,7 +50,7 @@ export default function Home() {
 			<h1 className="flex relative place-items-center text-3xl text-center pt-20 max-w-sm">
 				Dein Marktplatz für Fussballschuhe.
 			</h1>
-			<div className="flex flex-col relative max-w-lg">
+			<div className="flex relative max-w-lg">
 				<p className="text-center text-gray-300">
 					Boots Exchange, ist ein Online-Marktplatz für gebrauchte aber
 					neuwertige Fußballschuhe. Hier kannst du deine unpassenden Schuhe
@@ -22,11 +58,31 @@ export default function Home() {
 					Fußballschuhen suchen, die besser zu deinen Bedürfnissen passen!
 				</p>
 			</div>
-			<div className="flex flex-col justify-center w-full gap-4 max-w-xs lg:flex-row lg:max-w-lg">
-				<Button title={'Kaufen'} />
-				<Button title={'Verkaufen'} />
-				<Button title={'Kaufen und Verkaufen'} />
-			</div>
+			{selected.length === 0 ? (
+				<div className="flex flex-col justify-center w-full gap-4 max-w-xs lg:flex-row lg:max-w-lg">
+					<Button title={'Kaufen'} onClick={handleClick} />
+					<Button title={'Verkaufen'} onClick={handleClick} />
+					<Button title={'Kaufen und Verkaufen'} onClick={handleClick} />
+				</div>
+			) : (
+				<div className="flex flex-col justify-center w-full gap-4 max-w-xs lg:max-w-lg">
+					<p className="text-center text-gray-300">
+						Cool, dass du auf Boots Exchange {selected} möchtest. Wir sind bald
+						soweit, gib uns kurz deine Email an und wir tragen dich in die
+						Warteliste ein.
+					</p>
+					<input
+						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+						value={email}
+						placeholder="markus.mueller@firma.com"
+						onChange={(e) => {
+							console.log(e.currentTarget.value);
+							setEmail(e.currentTarget.value);
+						}}
+					/>
+					<Button title="Abschicken" onClick={submit} />
+				</div>
+			)}
 		</main>
 	);
 }
