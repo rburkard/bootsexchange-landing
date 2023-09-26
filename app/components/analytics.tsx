@@ -1,7 +1,6 @@
 import Script from 'next/script';
 
 export const GoogleAnalytics = ({ga_id}: {ga_id: string}) => {
-	console.log('running analytics comp', ga_id);
 	return (
 		<>
 			<Script
