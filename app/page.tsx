@@ -6,6 +6,7 @@ import {useState} from 'react';
 export default function Home() {
 	const [selected, setSelected] = useState('');
 	const [submitted, setSubmitted] = useState(false);
+	const [disabled, setDisabled] = useState(false);
 
 	const [email, setEmail] = useState('');
 
@@ -17,6 +18,7 @@ export default function Home() {
 
 	const submit = async (event: React.FormEvent<HTMLButtonElement>) => {
 		event.preventDefault();
+		setDisabled(true);
 
 		const response = await fetch(url, {
 			method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -29,9 +31,10 @@ export default function Home() {
 		});
 
 		if (response.ok) {
-			localStorage.setItem('submittedMessage', 'ok');
 			setSubmitted(true);
 		}
+
+		setDisabled(false);
 	};
 
 	return (
@@ -41,11 +44,11 @@ export default function Home() {
 				<Image alt={'logo'} src={'/logo.png'} width={40} height={40} />
 				<p className="mt-1">Boots Exchange</p>
 			</div>
-
 			{/* Content */}
 			<h1 className="flex relative place-items-center text-3xl text-center pt-20 max-w-sm">
 				Dein Marktplatz für Fussballschuhe.
 			</h1>
+
 			<div className="flex relative max-w-lg">
 				<p className="text-center text-gray-300">
 					Boots Exchange, ist ein Online-Marktplatz für gebrauchte aber
@@ -54,11 +57,18 @@ export default function Home() {
 					Fußballschuhen suchen, die besser zu deinen Bedürfnissen passen!
 				</p>
 			</div>
-			{selected.length === 0 && !submitted ? (
+			{selected.length === 0 ? (
 				<div className="flex flex-col justify-center w-full gap-4 max-w-xs lg:flex-row lg:max-w-lg">
 					<Button title={'Kaufen'} onClick={handleClick} />
 					<Button title={'Verkaufen'} onClick={handleClick} />
 					<Button title={'Kaufen und Verkaufen'} onClick={handleClick} />
+				</div>
+			) : submitted ? (
+				<div className="flex flex-col justify-center w-full gap-4 max-w-xs lg:max-w-lg">
+					{' '}
+					<p className="text-center text-gray-300">
+						Vielen Dank, wir melden uns bei dir sobald es los geht!
+					</p>
 				</div>
 			) : (
 				<div className="flex flex-col justify-center w-full gap-4 max-w-xs lg:max-w-lg">
@@ -75,7 +85,7 @@ export default function Home() {
 							setEmail(e.currentTarget.value);
 						}}
 					/>
-					<Button title="Abschicken" onClick={submit} />
+					<Button disabled={disabled} title="Abschicken" onClick={submit} />
 				</div>
 			)}
 		</main>
