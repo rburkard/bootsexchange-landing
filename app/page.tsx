@@ -10,8 +10,6 @@ export default function Home() {
 	const [email, setEmail] = useState('');
 
 	const handleClick = (e: React.FormEvent<HTMLButtonElement>) => {
-		console.log(e.currentTarget.value);
-		console.log('clicked');
 		setSelected(e.currentTarget.value);
 	};
 	const url =
@@ -34,8 +32,6 @@ export default function Home() {
 			localStorage.setItem('submittedMessage', 'ok');
 			setSubmitted(true);
 		}
-
-		return response.json(); // parses JSON response into native JavaScript objects
 	};
 
 	return (
@@ -58,7 +54,7 @@ export default function Home() {
 					Fußballschuhen suchen, die besser zu deinen Bedürfnissen passen!
 				</p>
 			</div>
-			{selected.length === 0 ? (
+			{selected.length === 0 && !submitted ? (
 				<div className="flex flex-col justify-center w-full gap-4 max-w-xs lg:flex-row lg:max-w-lg">
 					<Button title={'Kaufen'} onClick={handleClick} />
 					<Button title={'Verkaufen'} onClick={handleClick} />
@@ -76,7 +72,6 @@ export default function Home() {
 						value={email}
 						placeholder="markus.mueller@firma.com"
 						onChange={(e) => {
-							console.log(e.currentTarget.value);
 							setEmail(e.currentTarget.value);
 						}}
 					/>
